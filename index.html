@@ -796,22 +796,57 @@
                 // Add a small delay to ensure all animations complete
                 await new Promise(resolve => setTimeout(resolve, 300));
                 
-                // Temporarily adjust container width for mobile screenshot
-                const originalWidth = document.querySelector('.container').style.width;
+                // Store original styles
+                const container = document.querySelector('.container');
+                const originalWidth = container.style.width;
+                const originalMaxWidth = container.style.maxWidth;
+                const originalBorderRadius = container.style.borderRadius;
+                const originalOverflow = container.style.overflow;
+                
+                // Force full width for mobile devices during screenshot
                 if (isMobileDevice()) {
-                    document.querySelector('.container').style.width = '100%';
-                    document.querySelector('.container').style.maxWidth = '100%';
-                    document.querySelector('.container').style.borderRadius = '0';
+                    container.style.width = '100%';
+                    container.style.maxWidth = '100%';
+                    container.style.borderRadius = '0';
+                    container.style.overflow = 'visible';
+                    
+                    // Force all content sections to full width
+                    document.querySelectorAll('.welcome-section, .committee-section, .info-box, .fees-section, .form-section, .payment-info, .whatsapp-instructions').forEach(section => {
+                        section.style.marginLeft = '0';
+                        section.style.marginRight = '0';
+                        section.style.width = '100%';
+                    });
+                    
+                    // Force form columns to full width
+                    document.querySelectorAll('.form-column').forEach(column => {
+                        column.style.marginLeft = '0';
+                        column.style.marginRight = '0';
+                        column.style.width = '100%';
+                    });
                 }
                 
                 // Capture the entire form content section
                 formScreenshotData = await captureFormScreenshot();
                 
-                // Restore original container width
+                // Restore original container styles
+                container.style.width = originalWidth;
+                container.style.maxWidth = originalMaxWidth;
+                container.style.borderRadius = originalBorderRadius;
+                container.style.overflow = originalOverflow;
+                
+                // Restore content section styles
                 if (isMobileDevice()) {
-                    document.querySelector('.container').style.width = originalWidth;
-                    document.querySelector('.container').style.maxWidth = '1600px';
-                    document.querySelector('.container').style.borderRadius = '15px';
+                    document.querySelectorAll('.welcome-section, .committee-section, .info-box, .fees-section, .form-section, .payment-info, .whatsapp-instructions').forEach(section => {
+                        section.style.marginLeft = '';
+                        section.style.marginRight = '';
+                        section.style.width = '';
+                    });
+                    
+                    document.querySelectorAll('.form-column').forEach(column => {
+                        column.style.marginLeft = '';
+                        column.style.marginRight = '';
+                        column.style.width = '';
+                    });
                 }
                 
                 // Display the screenshot
@@ -872,6 +907,34 @@
                 const isMobile = isMobileDevice();
                 const scale = isMobile ? 2 : 2; // Higher scale for better quality
                 
+                // Store original styles for restoration
+                const originalContainerWidth = document.querySelector('.container').style.width;
+                const originalContainerMaxWidth = document.querySelector('.container').style.maxWidth;
+                const originalContainerBorderRadius = document.querySelector('.container').style.borderRadius;
+                const originalContainerOverflow = document.querySelector('.container').style.overflow;
+                
+                // Force full width for mobile devices during screenshot
+                if (isMobile) {
+                    document.querySelector('.container').style.width = '100%';
+                    document.querySelector('.container').style.maxWidth = '100%';
+                    document.querySelector('.container').style.borderRadius = '0';
+                    document.querySelector('.container').style.overflow = 'visible';
+                    
+                    // Force all content sections to full width
+                    document.querySelectorAll('.welcome-section, .committee-section, .info-box, .fees-section, .form-section, .payment-info, .whatsapp-instructions').forEach(section => {
+                        section.style.marginLeft = '0';
+                        section.style.marginRight = '0';
+                        section.style.width = '100%';
+                    });
+                    
+                    // Force form columns to full width
+                    document.querySelectorAll('.form-column').forEach(column => {
+                        column.style.marginLeft = '0';
+                        column.style.marginRight = '0';
+                        column.style.width = '100%';
+                    });
+                }
+                
                 // Capture the entire content section
                 const canvas = await html2canvas(contentSection, {
                     scale: scale,
@@ -900,168 +963,121 @@
                             clonedContent.style.padding = '20px';
                             clonedContent.style.overflow = 'visible';
                         }
+                        
+                        // Force all sections to full width for mobile
+                        if (isMobile) {
+                            clonedDoc.querySelectorAll('.welcome-section, .committee-section, .info-box, .fees-section, .form-section, .payment-info, .whatsapp-instructions').forEach(section => {
+                                section.style.marginLeft = '0';
+                                section.style.marginRight = '0';
+                                section.style.width = '100%';
+                            });
+                            
+                            clonedDoc.querySelectorAll('.form-column').forEach(column => {
+                                column.style.marginLeft = '0';
+                                column.style.marginRight = '0';
+                                column.style.width = '100%';
+                            });
+                        }
                     }
                 });
                 
-                // Resize the canvas for optimal WhatsApp display
-                return optimizeImageForWhatsApp(canvas);
-            } catch (error) {
-                console.error('Error capturing form screenshot:', error);
-                // Fallback to capturing the entire container
-                const container = document.querySelector('.container');
-                const canvas = await html2canvas(container, {
-                    scale: isMobileDevice() ? 2 : 2,
-                    logging: false,
-                    useCORS: true,
-                    backgroundColor: '#ffffff',
-                    width: container.scrollWidth,
-                    height: container.scrollHeight
-                });
-                return optimizeImageForWhatsApp(canvas);
-            }
-        }
-        
-        // Optimize image for WhatsApp display - WIDER FOR MOBILE
-        function optimizeImageForWhatsApp(canvas) {
-            // Create a new canvas with dimensions optimized for mobile display
-            const isMobile = isMobileDevice();
-            
-            // Set width to match typical mobile screen width (approx 400px for most phones)
-            const targetWidth = isMobile ? 800 : 1200; // Wider for mobile
-            const scaleFactor = targetWidth / canvas.width;
-            const newWidth = targetWidth;
-            const newHeight = canvas.height * scaleFactor;
-            
-            const optimizedCanvas = document.createElement('canvas');
-            optimizedCanvas.width = newWidth;
-            optimizedCanvas.height = newHeight;
-            
-            const ctx = optimizedCanvas.getContext('2d');
-            
-            // Fill with white background first
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, newWidth, newHeight);
-            
-            // Draw the captured content
-            ctx.drawImage(canvas, 0, 0, newWidth, newHeight);
-            
-            // Return as JPEG with moderate compression for smaller file size
-            return optimizedCanvas.toDataURL('image/jpeg', 0.85);
-        }
-        
-        // Share image directly via WhatsApp
-        function shareImageViaWhatsApp(imageData) {
-            // Convert base64 to blob
-            fetch(imageData)
-                .then(res => res.blob())
-                .then(blob => {
-                    const file = new File([blob], "pga-registration-form.jpg", { type: "image/jpeg" });
-                    
-                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                        // Use Web Share API for mobile devices
-                        navigator.share({
-                            files: [file],
-                            title: 'PGA Society Registration Form',
-                            text: 'Here is my PGA Society registration form:'
-                        })
-                        .catch(error => {
-                            console.error('Error sharing:', error);
-                            fallbackWhatsAppSharing();
-                        });
-                    } else {
-                        // Fallback for desktop or unsupported browsers
-                        fallbackWhatsAppSharing();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error converting image:', error);
-                    fallbackWhatsAppSharing();
-                });
-        }
-        
-        // Download image function
-        function downloadImage(imageData) {
-            const downloadLink = document.createElement('a');
-            downloadLink.href = imageData;
-            downloadLink.download = 'pga-registration-form.jpg';
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-        }
-        
-        // Fallback method for sharing via WhatsApp
-        function fallbackWhatsAppSharing() {
-            // Download the image first
-            downloadImage(formScreenshotData);
-            
-            // Open WhatsApp with pre-selected number
-            setTimeout(() => {
-                const isMobile = isMobileDevice();
-                const message = encodeURIComponent('Here is my PGA Society registration form. I have attached the image separately.');
-                
+                // Restore original styles
                 if (isMobile) {
-                    window.open(`whatsapp://send?phone=${whatsappNumber}&text=${message}`);
-                } else {
-                    window.open(`https://web.whatsapp.com/send?phone=${whatsappNumber}&text=${message}`);
+                    document.querySelector('.container').style.width = originalContainerWidth;
+                    document.querySelector('.container').style.maxWidth = originalContainerMaxWidth;
+                    document.querySelector('.container').style.borderRadius = originalContainerBorderRadius;
+                    document.querySelector('.container').style.overflow = originalContainerOverflow;
+                    
+                    // Restore content section styles
+                    document.querySelectorAll('.welcome-section, .committee-section, .info-box, .fees-section, .form-section, .payment-info, .whatsapp-instructions').forEach(section => {
+                        section.style.marginLeft = '';
+                        section.style.marginRight = '';
+                        section.style.width = '';
+                    });
+                    
+                    document.querySelectorAll('.form-column').forEach(column => {
+                        column.style.marginLeft = '';
+                        column.style.marginRight = '';
+                        column.style.width = '';
+                    });
                 }
                 
-                // Show instructions for user
-                alert('Your form image has been downloaded. Please attach it manually in WhatsApp to complete your registration.');
-            }, 1000);
-        }
-        
-        // Add floating animation to form inputs
-        document.querySelectorAll('.form-group input, .form-group select').forEach(input => {
-            input.addEventListener('focus', function() {
-                this.parentElement.style.transform = 'translateY(-5px)';
-                this.parentElement.style.transition = 'transform 0.3s ease';
-            });
-            
-            input.addEventListener('blur', function() {
-                this.parentElement.style.transform = 'translateY(0)';
-            });
-        });
-        
-        // Adjust form layout for mobile devices
-        function adjustLayoutForMobile() {
-            if (isMobileDevice()) {
-                // Make container full width on mobile
-                document.querySelector('.container').style.width = '100%';
-                document.querySelector('.container').style.maxWidth = '100%';
-                document.querySelector('.container').style.borderRadius = '0';
-                
-                // Adjust form columns to stack vertically
-                document.querySelectorAll('.form-row').forEach(row => {
-                    row.style.gridTemplateColumns = '1fr';
-                });
-                
-                // Make form inputs larger for easier touch interaction
-                document.querySelectorAll('input, select').forEach(input => {
-                    input.style.padding = '16px 14px';
-                    input.style.fontSize = '16px'; // Prevent zoom on iOS
-                });
+                return canvas.toDataURL('image/jpeg', 0.9);
+            } catch (error) {
+                console.error('Error capturing screenshot:', error);
+                throw error;
             }
         }
         
-        // Initialize on page load
-        window.addEventListener('load', function() {
-            adjustLayoutForMobile();
-            
-            // Add a subtle animation to form elements
-            document.querySelectorAll('.form-group').forEach((group, index) => {
-                group.style.opacity = '0';
-                group.style.transform = 'translateY(20px)';
-                group.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        // Share image via WhatsApp
+        function shareImageViaWhatsApp(imageData) {
+            try {
+                // Convert base64 to blob
+                const byteString = atob(imageData.split(',')[1]);
+                const mimeString = imageData.split(',')[0].split(':')[1].split(';')[0];
+                const ab = new ArrayBuffer(byteString.length);
+                const ia = new Uint8Array(ab);
                 
-                setTimeout(() => {
-                    group.style.opacity = '1';
-                    group.style.transform = 'translateY(0)';
-                }, 100 + (index * 50));
+                for (let i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                
+                const blob = new Blob([ab], {type: mimeString});
+                const file = new File([blob], 'pga_registration.jpg', {type: 'image/jpeg'});
+                
+                // Check if Web Share API is available
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        files: [file],
+                        title: 'PGA Registration Form',
+                        text: 'Here is my PGA Society registration form'
+                    }).then(() => {
+                        console.log('Share successful');
+                    }).catch((error) => {
+                        console.error('Sharing failed', error);
+                        fallbackWhatsAppShare();
+                    });
+                } else {
+                    fallbackWhatsAppShare();
+                }
+            } catch (error) {
+                console.error('Error sharing via WhatsApp:', error);
+                fallbackWhatsAppShare();
+            }
+        }
+        
+        // Fallback method for WhatsApp sharing
+        function fallbackWhatsAppShare() {
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Here is my PGA Society registration form')}`;
+            window.open(whatsappUrl, '_blank');
+            
+            // Show instructions for manual attachment
+            alert('Please attach the downloaded image to your WhatsApp message manually.');
+        }
+        
+        // Download image
+        function downloadImage(imageData) {
+            const link = document.createElement('a');
+            link.download = 'pga_registration.jpg';
+            link.href = imageData;
+            link.click();
+        }
+        
+        // Initialize the form
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set focus to the first input field
+            document.getElementById('fullName').focus();
+            
+            // Add event listeners to clear error state when typing
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.style.borderColor === 'rgb(231, 76, 60)') {
+                        this.style.borderColor = '#e9ecef';
+                    }
+                });
             });
         });
-        
-        // Adjust layout on window resize
-        window.addEventListener('resize', adjustLayoutForMobile);
     </script>
 </body>
 </html>
