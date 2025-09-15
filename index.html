@@ -24,13 +24,14 @@
         }
         
         .container {
-            max-width: 800px;
+            max-width: 1600px; /* Doubled from 800px to 1600px */
             margin: 0 auto;
             background: white;
             border-radius: 15px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
             animation: slideUp 0.8s ease-out;
+            width: 95%;
         }
         
         @keyframes slideUp {
@@ -156,12 +157,30 @@
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 30px;
             margin-bottom: 20px;
         }
         
+        .form-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .form-column h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+        }
+        
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .form-group label {
@@ -222,9 +241,15 @@
             transform: translateY(0);
         }
         
+        @media (max-width: 1200px) {
+            .form-row {
+                grid-template-columns: 1fr; /* 1 column for medium screens */
+            }
+        }
+        
         @media (max-width: 768px) {
             .form-row {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr; /* 1 column for mobile */
             }
             
             .header h1 {
@@ -233,15 +258,33 @@
             
             .container {
                 margin: 10px;
+                width: 95%;
+                max-width: 95%;
             }
             
             .content {
                 padding: 20px;
             }
+            
+            .form-section {
+                padding: 20px;
+            }
+            
+            /* Force wider display on mobile */
+            body, html {
+                width: 100% !important;
+                overflow-x: hidden !important;
+            }
+            
+            .container {
+                width: 100% !important;
+                max-width: 100% !important;
+                border-radius: 0;
+            }
         }
         
         .highlight {
-            background: linear-gradient(120deg, #a8e6cf 0%, #dcedc8 100%);
+            background: linear-gradient(120deg, #a8e6cf 0%, #dcedc1 100%);
             padding: 2px 6px;
             border-radius: 4px;
             font-weight: 600;
@@ -407,6 +450,50 @@
             background: #2980b9;
             transform: translateY(-2px);
         }
+        
+        /* Mobile-specific styles for wider display */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                width: 100% !important;
+                max-width: 100% !important;
+                border-radius: 0;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .form-section, .welcome-section, .committee-section, 
+            .info-box, .fees-section, .payment-info {
+                padding: 15px;
+            }
+            
+            .form-group input, .form-group select {
+                padding: 10px 12px;
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+            
+            .submit-btn {
+                padding: 12px 30px;
+                font-size: 1em;
+            }
+            
+            .form-column {
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -458,7 +545,7 @@
                 <p><strong>Registration Fee (Non-refundable):</strong></p>
                 <ul style="margin: 15px 0; padding-left: 20px;">
                     <li><strong>£10 towards end-of-season prizes</strong></li>
-                    <li><strong>£10 contributes to end-of-season drinks and meal</strong></li>
+                    <li><strong>£10 contributes to end-of-season meal</strong></li>
                     <li><strong>Summer League Registration: £20</strong></li>
                     <li><strong>Winter League Registration: £20</strong></li>
                 </ul>
@@ -470,56 +557,52 @@
                 <h3>📝 Registration Information</h3>
                 
                 <div class="form-row">
-                    <div class="form-group">
-                        <h4 style="margin-bottom: 20px; color: #2c3e50;">Your Payment Details</h4>
-                        <label for="fullName">Full Name *</label>
-                        <input type="text" id="fullName" name="fullName" required>
+                    <div class="form-column">
+                        <h4>Your Payment Details</h4>
+                        <div class="form-group">
+                            <label for="fullName">Full Name *</label>
+                            <input type="text" id="fullName" name="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hcpIndex">HCP Index *</label>
+                            <input type="number" id="hcpIndex" name="hcpIndex" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bankName">Bank Name *</label>
+                            <input type="text" id="bankName" name="bankName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sortCode">Sort Code *</label>
+                            <input type="text" id="sortCode" name="sortCode" placeholder="XX-XX-XX" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="accountNumber">Account Number *</label>
+                            <input type="text" id="accountNumber" name="accountNumber" required>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <h4 style="margin-bottom: 20px; color: #2c3e50;">Payments Paid Out Account</h4>
-                        <label for="payoutName">Full Name *</label>
-                        <input type="text" id="payoutName" name="payoutName" Placeholder="Kamal Dhunna" required>
+                    
+                    <div class="form-column">
+                        <h4>Payments Paid Out Account</h4>
+                        <div class="form-group">
+                            <label for="payoutName">Full Name *</label>
+                            <input type="text" id="payoutName" name="payoutName" placeholder="Kamal Dhunna" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="payoutBank">Bank Name *</label>
+                            <input type="text" id="payoutBank" name="payoutBank" placeholder="Lloyds Bank" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="payoutSortCode">Sort Code *</label>
+                            <input type="text" id="payoutSortCode" name="payoutSortCode" placeholder="77-05-04" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="payoutAccount">Account Number *</label>
+                            <input type="text" id="payoutAccount" name="payoutAccount" placeholder="38211160" required>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="hcpIndex">HCP Index *</label>
-                        <input type="number" id="hcpIndex" name="hcpIndex" step="0.1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="payoutBank">Bank Name *</label>
-                        <input type="text" id="payoutBank" name="payoutBank" Placeholder="Lloyds Bank" required>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="bankName">Bank Name *</label>
-                        <input type="text" id="bankName" name="bankName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="payoutSortCode">Sort Code *</label>
-                        <input type="text" id="payoutSortCode" name="payoutSortCode" placeholder="77-05-04" required>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="sortCode">Sort Code *</label>
-                        <input type="text" id="sortCode" name="sortCode" placeholder="XX-XX-XX" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="payoutAccount">Account Number *</label>
-                        <input type="text" id="payoutAccount" name="payoutAccount" Placeholder="38211160" required>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="accountNumber">Account Number *</label>
-                        <input type="text" id="accountNumber" name="accountNumber" required>
-                    </div>
+                <div class="form-row" style="grid-template-columns: 1fr 1fr; margin-top: 20px;">
                     <div class="form-group">
                         <label for="registrationType">Registration Type *</label>
                         <select id="registrationType" name="registrationType" required>
@@ -528,16 +611,14 @@
                             <option value="winter">Winter League (£20)</option>
                         </select>
                     </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="email">Email Address *</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="phone">Phone Number *</label>
-                    <input type="tel" id="phone" name="phone" required>
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
                 </div>
                 
                 <div style="text-align: center; margin-top: 30px;">
@@ -589,6 +670,11 @@
         // WhatsApp number for pre-selection
         const whatsappNumber = "447123456789"; // Replace with actual PGA WhatsApp number
         
+        // Check if device is mobile
+        function isMobileDevice() {
+            return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        }
+        
         document.getElementById('pgaRegistrationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -637,8 +723,23 @@
                 // Add a small delay to ensure all animations complete
                 await new Promise(resolve => setTimeout(resolve, 300));
                 
+                // Temporarily adjust container width for mobile screenshot
+                const originalWidth = document.querySelector('.container').style.width;
+                if (isMobileDevice()) {
+                    document.querySelector('.container').style.width = '100%';
+                    document.querySelector('.container').style.maxWidth = '100%';
+                    document.querySelector('.container').style.borderRadius = '0';
+                }
+                
                 // Capture the entire form content section
                 formScreenshotData = await captureFormScreenshot();
+                
+                // Restore original container width
+                if (isMobileDevice()) {
+                    document.querySelector('.container').style.width = originalWidth;
+                    document.querySelector('.container').style.maxWidth = '1600px';
+                    document.querySelector('.container').style.borderRadius = '15px';
+                }
                 
                 // Display the screenshot
                 const screenshotImg = document.getElementById('formScreenshot');
@@ -694,7 +795,7 @@
             e.target.value = value;
         });
         
-        // Capture the entire form content section as screenshot with improved quality
+        // Capture the entire form content section as screenshot with optimized settings
         async function captureFormScreenshot() {
             const contentSection = document.querySelector('.content');
             
@@ -702,30 +803,83 @@
                 // Force a reflow to ensure all elements are properly rendered
                 await new Promise(resolve => setTimeout(resolve, 100));
                 
+                // Determine optimal scale based on device
+                const isMobile = isMobileDevice();
+                const scale = isMobile ? 1.8 : 2; // Increased scale for mobile to make image wider
+                
                 // Capture the entire content section
                 const canvas = await html2canvas(contentSection, {
-                    scale: 2, // Higher scale for better quality
+                    scale: scale,
                     logging: false,
                     useCORS: true,
                     backgroundColor: '#ffffff',
                     allowTaint: true,
-                    scrollY: -window.scrollY, // Capture the entire section
-                    height: contentSection.scrollHeight // Include all content
+                    scrollY: -window.scrollY,
+                    height: contentSection.scrollHeight,
+                    width: contentSection.scrollWidth,
+                    onclone: function(clonedDoc) {
+                        // Ensure all content is visible in the cloned document
+                        const clonedContainer = clonedDoc.querySelector('.container');
+                        if (clonedContainer) {
+                            clonedContainer.style.overflow = 'visible';
+                            clonedContainer.style.boxShadow = 'none';
+                            if (isMobile) {
+                                clonedContainer.style.width = '100%';
+                                clonedContainer.style.maxWidth = '100%';
+                                clonedContainer.style.borderRadius = '0';
+                            }
+                        }
+                        
+                        const clonedContent = clonedDoc.querySelector('.content');
+                        if (clonedContent) {
+                            clonedContent.style.padding = '20px';
+                            clonedContent.style.overflow = 'visible';
+                        }
+                    }
                 });
                 
-                return canvas.toDataURL('image/png', 1.0); // Highest quality
+                // Resize the canvas for optimal WhatsApp display
+                return optimizeImageForWhatsApp(canvas);
             } catch (error) {
                 console.error('Error capturing form screenshot:', error);
                 // Fallback to capturing the entire container
                 const container = document.querySelector('.container');
                 const canvas = await html2canvas(container, {
-                    scale: 1.5,
+                    scale: isMobileDevice() ? 1.8 : 2,
                     logging: false,
                     useCORS: true,
-                    backgroundColor: '#ffffff'
+                    backgroundColor: '#ffffff',
+                    width: container.scrollWidth,
+                    height: container.scrollHeight
                 });
-                return canvas.toDataURL('image/png', 1.0);
+                return optimizeImageForWhatsApp(canvas);
             }
+        }
+        
+        // Optimize image for WhatsApp display
+        function optimizeImageForWhatsApp(canvas) {
+            // Create a new canvas with dimensions optimized for mobile display
+            const isMobile = isMobileDevice();
+            const maxWidth = isMobile ? 1600 : 1200; // Increased width for mobile (40% wider)
+            const scaleFactor = maxWidth / canvas.width;
+            const newWidth = maxWidth;
+            const newHeight = canvas.height * scaleFactor;
+            
+            const optimizedCanvas = document.createElement('canvas');
+            optimizedCanvas.width = newWidth;
+            optimizedCanvas.height = newHeight;
+            
+            const ctx = optimizedCanvas.getContext('2d');
+            
+            // Fill with white background first
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, newWidth, newHeight);
+            
+            // Draw the captured content
+            ctx.drawImage(canvas, 0, 0, newWidth, newHeight);
+            
+            // Return as JPEG with moderate compression for smaller file size
+            return optimizedCanvas.toDataURL('image/jpeg', 0.85);
         }
         
         // Share image directly via WhatsApp
@@ -734,7 +888,7 @@
             fetch(imageData)
                 .then(res => res.blob())
                 .then(blob => {
-                    const file = new File([blob], "pga-registration-form.png", { type: "image/png" });
+                    const file = new File([blob], "pga-registration-form.jpg", { type: "image/jpeg" });
                     
                     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                         // Use Web Share API for mobile devices
@@ -762,7 +916,7 @@
         function downloadImage(imageData) {
             const downloadLink = document.createElement('a');
             downloadLink.href = imageData;
-            downloadLink.download = 'pga-registration-form.png';
+            downloadLink.download = 'pga-registration-form.jpg';
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
@@ -775,7 +929,7 @@
             
             // Open WhatsApp with pre-selected number
             setTimeout(() => {
-                const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                const isMobile = isMobileDevice();
                 const message = encodeURIComponent('Here is my PGA Society registration form. I have attached the image separately.');
                 
                 if (isMobile) {
