@@ -24,7 +24,7 @@
         }
         
         .container {
-            max-width: 1600px; /* Doubled from 800px to 1600px */
+            max-width: 1600px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
@@ -870,7 +870,7 @@
                 
                 // Determine optimal scale based on device
                 const isMobile = isMobileDevice();
-                const scale = isMobile ? 1.8 : 2; // Increased scale for mobile to make image wider
+                const scale = isMobile ? 2 : 2; // Higher scale for better quality
                 
                 // Capture the entire content section
                 const canvas = await html2canvas(contentSection, {
@@ -910,7 +910,7 @@
                 // Fallback to capturing the entire container
                 const container = document.querySelector('.container');
                 const canvas = await html2canvas(container, {
-                    scale: isMobileDevice() ? 1.8 : 2,
+                    scale: isMobileDevice() ? 2 : 2,
                     logging: false,
                     useCORS: true,
                     backgroundColor: '#ffffff',
@@ -921,13 +921,15 @@
             }
         }
         
-        // Optimize image for WhatsApp display
+        // Optimize image for WhatsApp display - WIDER FOR MOBILE
         function optimizeImageForWhatsApp(canvas) {
             // Create a new canvas with dimensions optimized for mobile display
             const isMobile = isMobileDevice();
-            const maxWidth = isMobile ? 1600 : 1200; // Increased width for mobile (40% wider)
-            const scaleFactor = maxWidth / canvas.width;
-            const newWidth = maxWidth;
+            
+            // Set width to match typical mobile screen width (approx 400px for most phones)
+            const targetWidth = isMobile ? 800 : 1200; // Wider for mobile
+            const scaleFactor = targetWidth / canvas.width;
+            const newWidth = targetWidth;
             const newHeight = canvas.height * scaleFactor;
             
             const optimizedCanvas = document.createElement('canvas');
