@@ -208,6 +208,28 @@
             transform: translateY(-2px);
         }
         
+        /* Styles for hardcoded fields */
+        .hardcoded-field {
+            background-color: #f5f5f5;
+            border: 2px solid #ddd;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #333;
+            cursor: not-allowed;
+            user-select: none;
+        }
+        
+        .hardcoded-field-value {
+            font-weight: 600;
+            color: #2c3e50;
+            padding: 8px 12px;
+            background-color: #e9ecef;
+            border-radius: 6px;
+            margin-top: 5px;
+            display: block;
+        }
+        
         .payment-info {
             background: linear-gradient(135deg, #f39c12, #e67e22);
             color: white;
@@ -280,6 +302,25 @@
                 width: 100% !important;
                 max-width: 100% !important;
                 border-radius: 0;
+            }
+            
+            /* Mobile-specific wider adjustments */
+            .form-column {
+                padding: 15px 20px;
+                margin: 0 -10px;
+                width: calc(100% + 20px);
+            }
+            
+            .form-group input, .form-group select {
+                padding: 14px 15px;
+                font-size: 16px;
+            }
+            
+            .welcome-section, .committee-section, 
+            .info-box, .fees-section, .payment-info {
+                margin-left: -10px;
+                margin-right: -10px;
+                width: calc(100% + 20px);
             }
         }
         
@@ -454,21 +495,22 @@
         /* Mobile-specific styles for wider display */
         @media (max-width: 480px) {
             body {
-                padding: 10px;
+                padding: 5px;
             }
             
             .container {
                 width: 100% !important;
                 max-width: 100% !important;
                 border-radius: 0;
+                margin: 0;
             }
             
             .content {
-                padding: 15px;
+                padding: 15px 10px;
             }
             
             .header {
-                padding: 20px;
+                padding: 20px 15px;
             }
             
             .header h1 {
@@ -477,21 +519,44 @@
             
             .form-section, .welcome-section, .committee-section, 
             .info-box, .fees-section, .payment-info {
-                padding: 15px;
+                padding: 15px 12px;
+                margin-left: -5px;
+                margin-right: -5px;
+                width: calc(100% + 10px);
             }
             
             .form-group input, .form-group select {
-                padding: 10px 12px;
+                padding: 14px 12px;
                 font-size: 16px; /* Prevent zoom on iOS */
             }
             
             .submit-btn {
-                padding: 12px 30px;
+                padding: 14px 30px;
                 font-size: 1em;
+                width: 100%;
             }
             
             .form-column {
-                padding: 15px;
+                padding: 15px 12px;
+                margin: 0 -5px;
+                width: calc(100% + 10px);
+            }
+            
+            /* Make form elements wider on mobile */
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                margin-bottom: 15px;
+            }
+            
+            /* Ensure all content sections use full width */
+            .welcome-section, .committee-section, 
+            .info-box, .fees-section, .payment-info,
+            .whatsapp-instructions, .success-message,
+            .error-message {
+                margin-left: -5px;
+                margin-right: -5px;
+                width: calc(100% + 10px);
             }
         }
     </style>
@@ -584,20 +649,28 @@
                     <div class="form-column">
                         <h4>Payments Paid Out Account</h4>
                         <div class="form-group">
-                            <label for="payoutName">Full Name *</label>
-                            <input type="text" id="payoutName" name="payoutName" placeholder="Kamal Dhunna" required>
+                            <label>Full Name *</label>
+                            <div class="hardcoded-field">
+                                <span class="hardcoded-field-value">Kamal Dhunna</span>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="payoutBank">Bank Name *</label>
-                            <input type="text" id="payoutBank" name="payoutBank" placeholder="Lloyds Bank" required>
+                            <label>Bank Name *</label>
+                            <div class="hardcoded-field">
+                                <span class="hardcoded-field-value">Lloyds Bank</span>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="payoutSortCode">Sort Code *</label>
-                            <input type="text" id="payoutSortCode" name="payoutSortCode" placeholder="77-05-04" required>
+                            <label>Sort Code *</label>
+                            <div class="hardcoded-field">
+                                <span class="hardcoded-field-value">77-05-04</span>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="payoutAccount">Account Number *</label>
-                            <input type="text" id="payoutAccount" name="payoutAccount" placeholder="38211160" required>
+                            <label>Account Number *</label>
+                            <div class="hardcoded-field">
+                                <span class="hardcoded-field-value">38211160</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -696,7 +769,7 @@
             });
             
             // Validate sort code format
-            const sortCodeFields = [document.getElementById('sortCode'), document.getElementById('payoutSortCode')];
+            const sortCodeFields = [document.getElementById('sortCode')];
             sortCodeFields.forEach(field => {
                 if (field.value && !/^\d{2}-\d{2}-\d{2}$/.test(field.value)) {
                     isValid = false;
@@ -780,14 +853,6 @@
         
         // Format sort code input for both sort code fields
         document.getElementById('sortCode').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 6) value = value.substring(0, 6);
-            if (value.length >= 2) value = value.substring(0,2) + '-' + value.substring(2);
-            if (value.length >= 5) value = value.substring(0,5) + '-' + value.substring(5);
-            e.target.value = value;
-        });
-        
-        document.getElementById('payoutSortCode').addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
             if (value.length > 6) value = value.substring(0, 6);
             if (value.length >= 2) value = value.substring(0,2) + '-' + value.substring(2);
@@ -946,13 +1011,55 @@
         // Add floating animation to form inputs
         document.querySelectorAll('.form-group input, .form-group select').forEach(input => {
             input.addEventListener('focus', function() {
-                this.parentElement.style.transform = 'translateY(-2px)';
+                this.parentElement.style.transform = 'translateY(-5px)';
+                this.parentElement.style.transition = 'transform 0.3s ease';
             });
             
             input.addEventListener('blur', function() {
                 this.parentElement.style.transform = 'translateY(0)';
             });
         });
+        
+        // Adjust form layout for mobile devices
+        function adjustLayoutForMobile() {
+            if (isMobileDevice()) {
+                // Make container full width on mobile
+                document.querySelector('.container').style.width = '100%';
+                document.querySelector('.container').style.maxWidth = '100%';
+                document.querySelector('.container').style.borderRadius = '0';
+                
+                // Adjust form columns to stack vertically
+                document.querySelectorAll('.form-row').forEach(row => {
+                    row.style.gridTemplateColumns = '1fr';
+                });
+                
+                // Make form inputs larger for easier touch interaction
+                document.querySelectorAll('input, select').forEach(input => {
+                    input.style.padding = '16px 14px';
+                    input.style.fontSize = '16px'; // Prevent zoom on iOS
+                });
+            }
+        }
+        
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            adjustLayoutForMobile();
+            
+            // Add a subtle animation to form elements
+            document.querySelectorAll('.form-group').forEach((group, index) => {
+                group.style.opacity = '0';
+                group.style.transform = 'translateY(20px)';
+                group.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                
+                setTimeout(() => {
+                    group.style.opacity = '1';
+                    group.style.transform = 'translateY(0)';
+                }, 100 + (index * 50));
+            });
+        });
+        
+        // Adjust layout on window resize
+        window.addEventListener('resize', adjustLayoutForMobile);
     </script>
 </body>
 </html>
