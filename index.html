@@ -602,45 +602,6 @@
             }
         }
         
-        /* Screenshot mode - full width styles */
-        .screenshot-mode {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100vw !important;
-            max-width: 100vw !important;
-        }
-        
-        .screenshot-mode .container {
-            width: 100vw !important;
-            max-width: 100vw !important;
-            margin: 0 !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-        }
-        
-        .screenshot-mode .content {
-            padding: 10px !important;
-        }
-        
-        .screenshot-mode .welcome-section,
-        .screenshot-mode .committee-section,
-        .screenshot-mode .info-box,
-        .screenshot-mode .fees-section,
-        .screenshot-mode .form-section,
-        .screenshot-mode .payment-info,
-        .screenshot-mode .whatsapp-instructions {
-            width: 100% !important;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-            box-sizing: border-box !important;
-        }
-        
-        .screenshot-mode .form-column {
-            width: 100% !important;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-            box-sizing: border-box !important;
-        }
     </style>
 </head>
 <body>
@@ -948,103 +909,93 @@
         // Capture the entire form content section as screenshot with optimized settings
         async function captureFormScreenshot() {
             const isMobile = isMobileDevice();
+            const container = document.querySelector('.container');
+            
+            // Store original styles
+            const originalStyles = {
+                bodyPadding: document.body.style.padding,
+                bodyMargin: document.body.style.margin,
+                bodyBackground: document.body.style.background,
+                containerWidth: container.style.width,
+                containerMaxWidth: container.style.maxWidth,
+                containerMargin: container.style.margin,
+                containerPadding: container.style.padding,
+                containerBorderRadius: container.style.borderRadius
+            };
             
             try {
-                // Add screenshot mode class for CSS-based styling
                 if (isMobile) {
-                    document.body.classList.add('screenshot-mode');
+                    // Apply mobile full-width styles
+                    document.body.style.padding = '0';
+                    document.body.style.margin = '0';
+                    document.body.style.background = 'white';
+                    
+                    container.style.width = '100%';
+                    container.style.maxWidth = '100%';
+                    container.style.margin = '0';
+                    container.style.padding = '0';
+                    container.style.borderRadius = '0';
                 }
                 
-                // Force a reflow to ensure all elements are properly rendered
-                await new Promise(resolve => setTimeout(resolve, 300));
+                // Wait for styles to settle
+                await new Promise(resolve => setTimeout(resolve, 100));
                 
-                // For mobile devices, capture the entire container instead of just content
-                const targetElement = isMobile ? document.querySelector('.container') : document.querySelector('.content');
-                
-                // Determine optimal scale and dimensions
-                const scale = isMobile ? 2.5 : 2; // Higher scale for mobile for better quality
-                const targetWidth = isMobile ? window.innerWidth : targetElement.scrollWidth;
-                const targetHeight = targetElement.scrollHeight;
-                
-                // Capture the target element
-                const canvas = await html2canvas(targetElement, {
-                    scale: scale,
-                    logging: false,
+                // Capture with optimal settings
+                const canvas = await html2canvas(container, {
+                    scale: 1,
                     useCORS: true,
+                    logging: false,
                     backgroundColor: '#ffffff',
                     allowTaint: true,
-                    scrollY: -window.scrollY,
-                    scrollX: 0,
-                    height: targetHeight,
-                    width: targetWidth,
-                    windowWidth: isMobile ? window.innerWidth : window.innerWidth,
-                    windowHeight: window.innerHeight,
-                    x: 0,
-                    y: 0,
+                    width: isMobile ? window.innerWidth : container.offsetWidth,
+                    height: container.scrollHeight,
                     onclone: function(clonedDoc) {
-                        // Apply screenshot mode to cloned document
                         if (isMobile) {
-                            clonedDoc.body.classList.add('screenshot-mode');
-                        }
-                        
-                        // Set the cloned document to use full width
-                        const clonedBody = clonedDoc.body;
-                        clonedBody.style.margin = '0';
-                        clonedBody.style.padding = '0';
-                        clonedBody.style.background = 'white';
-                        clonedBody.style.width = '100%';
-                        
-                        const clonedContainer = clonedDoc.querySelector('.container');
-                        if (clonedContainer) {
-                            clonedContainer.style.overflow = 'visible';
-                            clonedContainer.style.boxShadow = 'none';
+                            const clonedBody = clonedDoc.body;
+                            clonedBody.style.margin = '0';
+                            clonedBody.style.padding = '0';
+                            clonedBody.style.background = 'white';
                             
-                            if (isMobile) {
+                            const clonedContainer = clonedDoc.querySelector('.container');
+                            if (clonedContainer) {
                                 clonedContainer.style.width = '100%';
                                 clonedContainer.style.maxWidth = '100%';
                                 clonedContainer.style.margin = '0';
+                                clonedContainer.style.padding = '0';
                                 clonedContainer.style.borderRadius = '0';
+                                clonedContainer.style.boxShadow = 'none';
                             }
-                        }
-                        
-                        const clonedContent = clonedDoc.querySelector('.content');
-                        if (clonedContent) {
-                            clonedContent.style.padding = isMobile ? '8px' : '20px';
-                            clonedContent.style.overflow = 'visible';
-                            clonedContent.style.width = '100%';
-                        }
-                        
-                        // Ensure all sections use full width
-                        if (isMobile) {
-                            clonedDoc.querySelectorAll('.welcome-section, .committee-section, .info-box, .fees-section, .form-section, .payment-info, .whatsapp-instructions').forEach(section => {
-                                section.style.marginLeft = '0';
-                                section.style.marginRight = '0';
-                                section.style.width = '100%';
-                                section.style.boxSizing = 'border-box';
-                            });
-                            
-                            clonedDoc.querySelectorAll('.form-column').forEach(column => {
-                                column.style.marginLeft = '0';
-                                column.style.marginRight = '0';
-                                column.style.width = '100%';
-                                column.style.boxSizing = 'border-box';
-                            });
                         }
                     }
                 });
                 
-                // Remove screenshot mode class
-                if (isMobile) {
-                    document.body.classList.remove('screenshot-mode');
-                }
+                // Restore original styles
+                document.body.style.padding = originalStyles.bodyPadding || '';
+                document.body.style.margin = originalStyles.bodyMargin || '';
+                document.body.style.background = originalStyles.bodyBackground || '';
                 
-                return canvas.toDataURL('image/jpeg', 0.95);
+                container.style.width = originalStyles.containerWidth || '';
+                container.style.maxWidth = originalStyles.containerMaxWidth || '';
+                container.style.margin = originalStyles.containerMargin || '';
+                container.style.padding = originalStyles.containerPadding || '';
+                container.style.borderRadius = originalStyles.containerBorderRadius || '';
+                
+                return canvas.toDataURL('image/jpeg', 1.0);
+                
             } catch (error) {
                 console.error('Error capturing screenshot:', error);
-                // Make sure to remove the class even if there's an error
-                if (isMobile) {
-                    document.body.classList.remove('screenshot-mode');
-                }
+                
+                // Restore styles in case of error
+                document.body.style.padding = originalStyles.bodyPadding || '';
+                document.body.style.margin = originalStyles.bodyMargin || '';
+                document.body.style.background = originalStyles.bodyBackground || '';
+                
+                container.style.width = originalStyles.containerWidth || '';
+                container.style.maxWidth = originalStyles.containerMaxWidth || '';
+                container.style.margin = originalStyles.containerMargin || '';
+                container.style.padding = originalStyles.containerPadding || '';
+                container.style.borderRadius = originalStyles.containerBorderRadius || '';
+                
                 throw error;
             }
         }
