@@ -601,6 +601,46 @@
                 line-height: 1.4;
             }
         }
+        
+        /* Screenshot mode - full width styles */
+        .screenshot-mode {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
+        }
+        
+        .screenshot-mode .container {
+            width: 100vw !important;
+            max-width: 100vw !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+        
+        .screenshot-mode .content {
+            padding: 10px !important;
+        }
+        
+        .screenshot-mode .welcome-section,
+        .screenshot-mode .committee-section,
+        .screenshot-mode .info-box,
+        .screenshot-mode .fees-section,
+        .screenshot-mode .form-section,
+        .screenshot-mode .payment-info,
+        .screenshot-mode .whatsapp-instructions {
+            width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            box-sizing: border-box !important;
+        }
+        
+        .screenshot-mode .form-column {
+            width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            box-sizing: border-box !important;
+        }
     </style>
 </head>
 <body>
@@ -843,58 +883,8 @@
                 // Add a small delay to ensure all animations complete
                 await new Promise(resolve => setTimeout(resolve, 300));
                 
-                // Store original styles
-                const container = document.querySelector('.container');
-                const originalWidth = container.style.width;
-                const originalMaxWidth = container.style.maxWidth;
-                const originalBorderRadius = container.style.borderRadius;
-                const originalOverflow = container.style.overflow;
-                
-                // Force full width for mobile devices during screenshot
-                if (isMobileDevice()) {
-                    container.style.width = '100%';
-                    container.style.maxWidth = '100%';
-                    container.style.borderRadius = '0';
-                    container.style.overflow = 'visible';
-                    
-                    // Force all content sections to full width
-                    document.querySelectorAll('.welcome-section, .committee-section, .info-box, .fees-section, .form-section, .payment-info, .whatsapp-instructions').forEach(section => {
-                        section.style.marginLeft = '0';
-                        section.style.marginRight = '0';
-                        section.style.width = '100%';
-                    });
-                    
-                    // Force form columns to full width
-                    document.querySelectorAll('.form-column').forEach(column => {
-                        column.style.marginLeft = '0';
-                        column.style.marginRight = '0';
-                        column.style.width = '100%';
-                    });
-                }
-                
                 // Capture the entire form content section
                 formScreenshotData = await captureFormScreenshot();
-                
-                // Restore original container styles
-                container.style.width = originalWidth;
-                container.style.maxWidth = originalMaxWidth;
-                container.style.borderRadius = originalBorderRadius;
-                container.style.overflow = originalOverflow;
-                
-                // Restore content section styles
-                if (isMobileDevice()) {
-                    document.querySelectorAll('.welcome-section, .committee-section, .info-box, .fees-section, .form-section, .payment-info, .whatsapp-instructions').forEach(section => {
-                        section.style.marginLeft = '';
-                        section.style.marginRight = '';
-                        section.style.width = '';
-                    });
-                    
-                    document.querySelectorAll('.form-column').forEach(column => {
-                        column.style.marginLeft = '';
-                        column.style.marginRight = '';
-                        column.style.width = '';
-                    });
-                }
                 
                 // Display the screenshot
                 const screenshotImg = document.getElementById('formScreenshot');
@@ -957,114 +947,104 @@
         
         // Capture the entire form content section as screenshot with optimized settings
         async function captureFormScreenshot() {
-            const contentSection = document.querySelector('.content');
+            const isMobile = isMobileDevice();
             
             try {
-                // Force a reflow to ensure all elements are properly rendered
-                await new Promise(resolve => setTimeout(resolve, 100));
-                
-                // Determine optimal scale based on device
-                const isMobile = isMobileDevice();
-                const scale = isMobile ? 2 : 2; // Higher scale for better quality
-                
-                // Store original styles for restoration
-                const originalContainerWidth = document.querySelector('.container').style.width;
-                const originalContainerMaxWidth = document.querySelector('.container').style.maxWidth;
-                const originalContainerBorderRadius = document.querySelector('.container').style.borderRadius;
-                const originalContainerOverflow = document.querySelector('.container').style.overflow;
-                
-                // Force full width for mobile devices during screenshot
+                // Add screenshot mode class for CSS-based styling
                 if (isMobile) {
-                    document.querySelector('.container').style.width = '100%';
-                    document.querySelector('.container').style.maxWidth = '100%';
-                    document.querySelector('.container').style.borderRadius = '0';
-                    document.querySelector('.container').style.overflow = 'visible';
-                    
-                    // Force all content sections to full width
-                    document.querySelectorAll('.welcome-section, .committee-section, .info-box, .fees-section, .form-section, .payment-info, .whatsapp-instructions').forEach(section => {
-                        section.style.marginLeft = '0';
-                        section.style.marginRight = '0';
-                        section.style.width = '100%';
-                    });
-                    
-                    // Force form columns to full width
-                    document.querySelectorAll('.form-column').forEach(column => {
-                        column.style.marginLeft = '0';
-                        column.style.marginRight = '0';
-                        column.style.width = '100%';
-                    });
+                    document.body.classList.add('screenshot-mode');
                 }
                 
-                // Capture the entire content section
-                const canvas = await html2canvas(contentSection, {
+                // Force a reflow to ensure all elements are properly rendered
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                // For mobile devices, capture the entire container instead of just content
+                const targetElement = isMobile ? document.querySelector('.container') : document.querySelector('.content');
+                
+                // Determine optimal scale and dimensions
+                const scale = isMobile ? 2.5 : 2; // Higher scale for mobile for better quality
+                const targetWidth = isMobile ? window.innerWidth : targetElement.scrollWidth;
+                const targetHeight = targetElement.scrollHeight;
+                
+                // Capture the target element
+                const canvas = await html2canvas(targetElement, {
                     scale: scale,
                     logging: false,
                     useCORS: true,
                     backgroundColor: '#ffffff',
                     allowTaint: true,
                     scrollY: -window.scrollY,
-                    height: contentSection.scrollHeight,
-                    width: contentSection.scrollWidth,
+                    scrollX: 0,
+                    height: targetHeight,
+                    width: targetWidth,
+                    windowWidth: isMobile ? window.innerWidth : window.innerWidth,
+                    windowHeight: window.innerHeight,
+                    x: 0,
+                    y: 0,
                     onclone: function(clonedDoc) {
-                        // Ensure all content is visible in the cloned document
+                        // Apply screenshot mode to cloned document
+                        if (isMobile) {
+                            clonedDoc.body.classList.add('screenshot-mode');
+                        }
+                        
+                        // Set the cloned document to use full width
+                        const clonedBody = clonedDoc.body;
+                        clonedBody.style.margin = '0';
+                        clonedBody.style.padding = '0';
+                        clonedBody.style.background = 'white';
+                        clonedBody.style.width = '100%';
+                        
                         const clonedContainer = clonedDoc.querySelector('.container');
                         if (clonedContainer) {
                             clonedContainer.style.overflow = 'visible';
                             clonedContainer.style.boxShadow = 'none';
+                            
                             if (isMobile) {
                                 clonedContainer.style.width = '100%';
                                 clonedContainer.style.maxWidth = '100%';
+                                clonedContainer.style.margin = '0';
                                 clonedContainer.style.borderRadius = '0';
                             }
                         }
                         
                         const clonedContent = clonedDoc.querySelector('.content');
                         if (clonedContent) {
-                            clonedContent.style.padding = '20px';
+                            clonedContent.style.padding = isMobile ? '8px' : '20px';
                             clonedContent.style.overflow = 'visible';
+                            clonedContent.style.width = '100%';
                         }
                         
-                        // Force all sections to full width for mobile
+                        // Ensure all sections use full width
                         if (isMobile) {
                             clonedDoc.querySelectorAll('.welcome-section, .committee-section, .info-box, .fees-section, .form-section, .payment-info, .whatsapp-instructions').forEach(section => {
                                 section.style.marginLeft = '0';
                                 section.style.marginRight = '0';
                                 section.style.width = '100%';
+                                section.style.boxSizing = 'border-box';
                             });
                             
                             clonedDoc.querySelectorAll('.form-column').forEach(column => {
                                 column.style.marginLeft = '0';
                                 column.style.marginRight = '0';
                                 column.style.width = '100%';
+                                column.style.boxSizing = 'border-box';
                             });
                         }
                     }
                 });
                 
-                // Restore original styles
+                // Remove screenshot mode class
                 if (isMobile) {
-                    document.querySelector('.container').style.width = originalContainerWidth;
-                    document.querySelector('.container').style.maxWidth = originalContainerMaxWidth;
-                    document.querySelector('.container').style.borderRadius = originalContainerBorderRadius;
-                    document.querySelector('.container').style.overflow = originalContainerOverflow;
-                    
-                    // Restore content section styles
-                    document.querySelectorAll('.welcome-section, .committee-section, .info-box, .fees-section, .form-section, .payment-info, .whatsapp-instructions').forEach(section => {
-                        section.style.marginLeft = '';
-                        section.style.marginRight = '';
-                        section.style.width = '';
-                    });
-                    
-                    document.querySelectorAll('.form-column').forEach(column => {
-                        column.style.marginLeft = '';
-                        column.style.marginRight = '';
-                        column.style.width = '';
-                    });
+                    document.body.classList.remove('screenshot-mode');
                 }
                 
-                return canvas.toDataURL('image/jpeg', 0.9);
+                return canvas.toDataURL('image/jpeg', 0.95);
             } catch (error) {
                 console.error('Error capturing screenshot:', error);
+                // Make sure to remove the class even if there's an error
+                if (isMobile) {
+                    document.body.classList.remove('screenshot-mode');
+                }
                 throw error;
             }
         }
