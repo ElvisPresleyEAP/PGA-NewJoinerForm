@@ -208,7 +208,6 @@
             transform: translateY(-2px);
         }
         
-        /* Styles for hardcoded fields */
         .hardcoded-field {
             background-color: #f5f5f5;
             border: 2px solid #ddd;
@@ -265,62 +264,27 @@
         
         @media (max-width: 1200px) {
             .form-row {
-                grid-template-columns: 1fr; /* 1 column for medium screens */
+                grid-template-columns: 1fr;
             }
         }
         
         @media (max-width: 768px) {
             .form-row {
-                grid-template-columns: 1fr; /* 1 column for mobile */
+                grid-template-columns: 1fr;
             }
-            
             .header h1 {
                 font-size: 2em;
             }
-            
             .container {
                 margin: 10px;
                 width: 95%;
                 max-width: 95%;
             }
-            
             .content {
                 padding: 20px;
             }
-            
             .form-section {
                 padding: 20px;
-            }
-            
-            /* Force wider display on mobile */
-            body, html {
-                width: 100% !important;
-                overflow-x: hidden !important;
-            }
-            
-            .container {
-                width: 100% !important;
-                max-width: 100% !important;
-                border-radius: 0;
-            }
-            
-            /* Mobile-specific wider adjustments */
-            .form-column {
-                padding: 15px 20px;
-                margin: 0 -10px;
-                width: calc(100% + 20px);
-            }
-            
-            .form-group input, .form-group select {
-                padding: 14px 15px;
-                font-size: 16px;
-            }
-            
-            .welcome-section, .committee-section, 
-            .info-box, .fees-section, .payment-info {
-                margin-left: -10px;
-                margin-right: -10px;
-                width: calc(100% + 20px);
             }
         }
         
@@ -349,7 +313,6 @@
             box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
         }
         
-        /* Loading spinner */
         .spinner {
             display: inline-block;
             width: 20px;
@@ -439,99 +402,50 @@
         
         @media (max-width: 480px) {
             body {
-                padding: 5px;
+                padding: 0;
             }
-            
             .container {
-                width: 100% !important;
-                max-width: 100% !important;
+                width: 100%;
                 border-radius: 0;
                 margin: 0;
             }
-            
             .content {
                 padding: 15px 10px;
             }
-            
             .header {
                 padding: 20px 15px;
             }
-            
             .header h1 {
                 font-size: 1.8em;
             }
-            
             .form-section, .welcome-section, .committee-section, 
             .info-box, .fees-section, .payment-info {
                 padding: 15px 12px;
-                margin-left: -5px;
-                margin-right: -5px;
-                width: calc(100% + 10px);
             }
-            
             .form-group input, .form-group select {
-                padding: 14px 12px;
-                font-size: 16px; /* Prevent zoom on iOS */
+                font-size: 16px; 
             }
-            
             .submit-btn {
                 padding: 14px 30px;
                 font-size: 1em;
                 width: 100%;
             }
-            
             .form-column {
                 padding: 15px 12px;
-                margin: 0 -5px;
-                width: calc(100% + 10px);
-            }
-            
-            /* Make form elements wider on mobile */
-            .form-row {
-                grid-template-columns: 1fr;
-                gap: 15px;
-                margin-bottom: 15px;
-            }
-            
-            /* Ensure all content sections use full width */
-            .welcome-section, .committee-section, 
-            .info-box, .fees-section, .payment-info,
-            .download-instructions, .success-message,
-            .error-message {
-                margin-left: -5px;
-                margin-right: -5px;
-                width: calc(100% + 10px);
-            }
-        }
-        
-        /* Landscape orientation for mobile */
-        @media (max-width: 768px) and (orientation: landscape) {
-            .container {
-                max-width: 100%;
-                width: 100%;
-                border-radius: 0;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr 1fr;
-            }
-            
-            .form-section {
-                padding: 15px;
-            }
-            
-            .form-column {
-                padding: 12px;
             }
         }
         
         /* Capture container for screenshot */
+        /* MODIFICATION: Positioned off-screen with a fixed width to ensure consistent landscape-style screenshots on all devices. */
         .capture-container {
+            position: absolute;
+            top: 0;
+            left: -9999px; /* Moves the element off the visible screen */
+            width: 800px;  /* A fixed width for a landscape-like layout */
             background: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            width: 100%;
         }
         
         .capture-header {
@@ -566,12 +480,7 @@
             background: #f8f9fa;
             border-radius: 6px;
             border: 1px solid #e9ecef;
-        }
-        
-        @media (max-width: 768px) {
-            .capture-form-row {
-                grid-template-columns: 1fr;
-            }
+            word-wrap: break-word;
         }
     </style>
 </head>
@@ -740,8 +649,8 @@
         </div>
     </div>
     
-    <!-- Hidden container for screenshot capture -->
-    <div id="captureContainer" class="capture-container" style="display: none;">
+    <!-- This container is now styled to be off-screen with a fixed width for consistent screenshots -->
+    <div id="captureContainer" class="capture-container">
         <div class="capture-header">
             <h3>PGA Society Registration Form</h3>
             <p>Submitted by: <span id="captureFullName"></span></p>
@@ -805,49 +714,46 @@
         </div>
     </div>
     
-    <!-- Include html2canvas library for screenshot functionality -->
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
     <script>
-        // Store the form screenshot data
-        let formScreenshotData = null;
-        
         document.getElementById('pgaRegistrationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Hide any previous messages
             document.getElementById('successMessage').style.display = 'none';
             document.getElementById('errorMessage').style.display = 'none';
             
-            // Form validation
             const requiredFields = this.querySelectorAll('[required]');
             let isValid = true;
-            
+            let firstInvalidField = null;
+
             requiredFields.forEach(field => {
+                field.style.borderColor = '#e9ecef';
                 if (!field.value.trim()) {
                     isValid = false;
                     field.style.borderColor = '#e74c3c';
-                } else {
-                    field.style.borderColor = '#e9ecef';
+                    if (!firstInvalidField) firstInvalidField = field;
                 }
             });
             
-            // Validate sort code format
-            const sortCodeFields = [document.getElementById('sortCode')];
-            sortCodeFields.forEach(field => {
-                if (field.value && !/^\d{2}-\d{2}-\d{2}$/.test(field.value)) {
-                    isValid = false;
-                    field.style.borderColor = '#e74c3c';
-                    document.getElementById('errorText').textContent = 'Please enter sort code in the format XX-XX-XX';
-                }
-            });
+            const sortCodeField = document.getElementById('sortCode');
+            if (sortCodeField.value && !/^\d{2}-\d{2}-\d{2}$/.test(sortCodeField.value)) {
+                isValid = false;
+                sortCodeField.style.borderColor = '#e74c3c';
+                document.getElementById('errorText').textContent = 'Please enter sort code in the format XX-XX-XX';
+                if (!firstInvalidField) firstInvalidField = sortCodeField;
+            } else if (!isValid) {
+                 document.getElementById('errorText').textContent = 'Please fill all required fields correctly.';
+            }
             
             if (!isValid) {
                 document.getElementById('errorMessage').style.display = 'block';
+                if (firstInvalidField) {
+                    firstInvalidField.focus();
+                }
                 return;
             }
             
-            // Show loading state
             const submitButton = document.getElementById('submitButton');
             const spinner = document.getElementById('submitSpinner');
             const submitText = document.getElementById('submitText');
@@ -857,134 +763,86 @@
             submitText.textContent = 'Generating...';
             
             try {
-                // Populate the capture container with form data
                 populateCaptureContainer();
                 
-                // Add a small delay to ensure all animations complete
-                await new Promise(resolve => setTimeout(resolve, 300));
+                const imageData = await captureFormScreenshot();
                 
-                // Capture the form data as a clean image
-                formScreenshotData = await captureFormScreenshot();
-                
-                // Display the screenshot
                 const screenshotImg = document.getElementById('formScreenshot');
-                screenshotImg.src = formScreenshotData;
+                screenshotImg.src = imageData;
                 screenshotImg.style.display = 'block';
                 
-                // Set up download button
                 document.getElementById('downloadButton').onclick = function() {
-                    downloadImage(formScreenshotData);
+                    downloadImage(imageData, document.getElementById('fullName').value);
                 };
                 
-                // Display the instructions
                 document.getElementById('downloadInstructions').style.display = 'block';
-                
-                // Show success message
                 document.getElementById('successMessage').style.display = 'block';
                 
-                // Scroll to instructions
                 document.getElementById('downloadInstructions').scrollIntoView({ behavior: 'smooth' });
                 
             } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('errorText').textContent = 
-                    'There was a problem generating your form. Please try again or contact us directly at KMDhunna@gmail.com';
+                console.error('Error generating form:', error);
+                document.getElementById('errorText').textContent = 'There was a problem generating your form. Please try again.';
                 document.getElementById('errorMessage').style.display = 'block';
             } finally {
-                // Reset button state
                 submitButton.disabled = false;
                 spinner.classList.add('hidden');
                 submitText.textContent = 'Generate Registration Form';
             }
         });
         
-        // Format sort code input for both sort code fields
         document.getElementById('sortCode').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 6) value = value.substring(0, 6);
-            if (value.length >= 2) value = value.substring(0,2) + '-' + value.substring(2);
-            if (value.length >= 5) value = value.substring(0,5) + '-' + value.substring(5);
+            let value = e.target.value.replace(/[^\d]/g, '');
+            if (value.length > 4) value = `${value.slice(0, 2)}-${value.slice(2, 4)}-${value.slice(4, 6)}`;
+            else if (value.length > 2) value = `${value.slice(0, 2)}-${value.slice(2, 4)}`;
             e.target.value = value;
         });
         
-        // Populate the capture container with form data
         function populateCaptureContainer() {
-            document.getElementById('captureFullName').textContent = document.getElementById('fullName').value;
-            document.getElementById('captureNameValue').textContent = document.getElementById('fullName').value;
-            document.getElementById('captureHcpValue').textContent = document.getElementById('hcpIndex').value;
-            document.getElementById('captureBankValue').textContent = document.getElementById('bankName').value;
-            document.getElementById('captureSortCodeValue').textContent = document.getElementById('sortCode').value;
-            document.getElementById('captureAccountValue').textContent = document.getElementById('accountNumber').value;
-            
+            const getValue = id => document.getElementById(id).value;
             const registrationSelect = document.getElementById('registrationType');
             const registrationText = registrationSelect.options[registrationSelect.selectedIndex].text;
-            document.getElementById('captureRegistrationValue').textContent = registrationText;
-            
-            document.getElementById('capturePhoneValue').textContent = document.getElementById('phone').value;
-            
-            // Add current date
             const now = new Date();
-            document.getElementById('captureDateValue').textContent = now.toLocaleDateString('en-GB', {
-                day: '2-digit', month: '2-digit', year: 'numeric'
-            });
+            const formattedDate = now.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+            document.getElementById('captureFullName').textContent = getValue('fullName');
+            document.getElementById('captureNameValue').textContent = getValue('fullName');
+            document.getElementById('captureHcpValue').textContent = getValue('hcpIndex');
+            document.getElementById('captureBankValue').textContent = getValue('bankName');
+            document.getElementById('captureSortCodeValue').textContent = getValue('sortCode');
+            document.getElementById('captureAccountValue').textContent = getValue('accountNumber');
+            document.getElementById('captureRegistrationValue').textContent = registrationText;
+            document.getElementById('capturePhoneValue').textContent = getValue('phone');
+            document.getElementById('captureDateValue').textContent = formattedDate;
         }
         
-        // Capture the form data as a clean image
+        // MODIFICATION: This function now captures a fixed-width element that is positioned off-screen.
+        // This prevents the narrow image issue on mobile devices.
         async function captureFormScreenshot() {
             const captureContainer = document.getElementById('captureContainer');
             
-            try {
-                // Show the capture container temporarily
-                captureContainer.style.display = 'block';
-                
-                // Force a reflow to ensure all elements are properly rendered
-                await new Promise(resolve => setTimeout(resolve, 100));
-                
-                // Use html2canvas with optimized settings for mobile
-                const canvas = await html2canvas(captureContainer, {
-                    scale: 2,
-                    logging: false,
-                    useCORS: true,
-                    backgroundColor: '#ffffff'
-                });
-                
-                // Hide the capture container again
-                captureContainer.style.display = 'none';
-                
-                return canvas.toDataURL('image/png');
-            } catch (error) {
-                // Ensure capture container is hidden even if there's an error
-                captureContainer.style.display = 'none';
-                throw error;
-            }
+            // A small delay helps ensure all styles and fonts are rendered before capture.
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            const canvas = await html2canvas(captureContainer, {
+                scale: 2, // Use a higher scale for a clearer, high-resolution image
+                logging: false,
+                useCORS: true,
+                backgroundColor: '#ffffff'
+            });
+            
+            return canvas.toDataURL('image/png');
         }
         
-        // Download the image
-        function downloadImage(imageData) {
+        function downloadImage(imageData, fullName) {
             const link = document.createElement('a');
+            const fileName = `pga-registration-${fullName.trim().replace(/\s+/g, '-')}.png`;
             link.href = imageData;
-            link.download = 'pga-registration-form.png';
+            link.download = fileName;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
-        
-        // Add a class to body for mobile detection
-        function isMobileDevice() {
-            return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        }
-        
-        if (isMobileDevice()) {
-            document.body.classList.add('mobile-device');
-        }
-        
-        // Add orientation change listener
-        window.addEventListener('orientationchange', function() {
-            // Refresh the page on orientation change to ensure proper rendering
-            setTimeout(function() {
-                window.location.reload();
-            }, 500);
-        });
     </script>
 </body>
 </html>
