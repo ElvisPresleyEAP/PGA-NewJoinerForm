@@ -2,11 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="theme-color" content="#27ae60">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PGA Society Registration Form</title>
     <style>
         * {
@@ -500,7 +496,6 @@
         @media (max-width: 480px) {
             body {
                 padding: 5px;
-                font-size: 16px; /* Prevent zoom on Android */
             }
             
             .container {
@@ -532,26 +527,13 @@
             
             .form-group input, .form-group select {
                 padding: 14px 12px;
-                font-size: 16px; /* Prevent zoom on iOS and Android */
-                -webkit-appearance: none; /* Remove default styling on mobile Safari */
-                appearance: none;
-                border-radius: 8px;
-                min-height: 44px; /* Touch target size */
-            }
-            
-            .form-group select {
-                background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23666" d="M2 0L0 2h4zM2 5L0 3h4z"/></svg>');
-                background-repeat: no-repeat;
-                background-position: right 10px center;
-                background-size: 12px;
-                padding-right: 30px;
+                font-size: 16px; /* Prevent zoom on iOS */
             }
             
             .submit-btn {
                 padding: 14px 30px;
                 font-size: 1em;
                 width: 100%;
-                min-height: 50px; /* Better touch target */
             }
             
             .form-column {
@@ -576,32 +558,7 @@
                 margin-right: -5px;
                 width: calc(100% + 10px);
             }
-            
-            /* WhatsApp button improvements for mobile */
-            .whatsapp-btn, .download-btn {
-                min-height: 50px;
-                font-size: 16px;
-                padding: 15px 20px;
-                margin: 10px 5px;
-                flex: 1;
-                max-width: calc(50% - 10px);
-            }
-            
-            .btn-group {
-                flex-direction: row;
-                width: 100%;
-            }
         }
-        
-        /* Android-specific improvements */
-        @media screen and (max-width: 480px) and (-webkit-min-device-pixel-ratio: 1) {
-            input[type="text"], input[type="email"], input[type="tel"], 
-            input[type="number"], select {
-                font-size: 16px !important; /* Prevent zoom on Android Chrome */
-                line-height: 1.4;
-            }
-        }
-        
     </style>
 </head>
 <body>
@@ -764,13 +721,8 @@
                     </button>
                 </div>
                 
-                <div class="mobile-tip" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #17a2b8;">
-                    <h4 style="color: #17a2b8; margin-bottom: 10px;">📱 Mobile Users:</h4>
-                    <p style="margin: 0; font-size: 14px;">Tap "Share via WhatsApp" to automatically download the image and open WhatsApp. If WhatsApp doesn't open automatically, find the downloaded image in your phone's gallery and attach it manually to a WhatsApp message to the PGA Society.</p>
-                </div>
-                
-                <p style="margin-top: 15px;"><strong>Contact Number:</strong> +44 7943 801169</p>
-                <p style="font-size: 14px; color: #666;">Click the button above to share your form image directly via WhatsApp. If the sharing doesn't work automatically, download the image and manually attach it to a WhatsApp message to the PGA committee.</p>
+                <p style="margin-top: 15px;">Click the button above to share your form image directly via WhatsApp.</p>
+                <p>If the sharing doesn't work automatically, download the image and manually attach it to a WhatsApp message to the PGA committee.</p>
             </div>
             
             <div class="payment-info">
@@ -789,7 +741,7 @@
         let formScreenshotData = null;
         
         // WhatsApp number for pre-selection
-        const whatsappNumber = "447943801169"; // PGA Society WhatsApp number
+        const whatsappNumber = "447123456789"; // Replace with actual PGA WhatsApp number
         
         // Check if device is mobile
         function isMobileDevice() {
@@ -844,8 +796,58 @@
                 // Add a small delay to ensure all animations complete
                 await new Promise(resolve => setTimeout(resolve, 300));
                 
+                // Store original styles
+                const container = document.querySelector('.container');
+                const originalWidth = container.style.width;
+                const originalMaxWidth = container.style.maxWidth;
+                const originalBorderRadius = container.style.borderRadius;
+                const originalOverflow = container.style.overflow;
+                
+                // Force full width for mobile devices during screenshot
+                if (isMobileDevice()) {
+                    container.style.width = '100%';
+                    container.style.maxWidth = '100%';
+                    container.style.borderRadius = '0';
+                    container.style.overflow = 'visible';
+                    
+                    // Force all content sections to full width
+                    document.querySelectorAll('.welcome-section, .committee-section, .info-box, .fees-section, .form-section, .payment-info, .whatsapp-instructions').forEach(section => {
+                        section.style.marginLeft = '0';
+                        section.style.marginRight = '0';
+                        section.style.width = '100%';
+                    });
+                    
+                    // Force form columns to full width
+                    document.querySelectorAll('.form-column').forEach(column => {
+                        column.style.marginLeft = '0';
+                        column.style.marginRight = '0';
+                        column.style.width = '100%';
+                    });
+                }
+                
                 // Capture the entire form content section
                 formScreenshotData = await captureFormScreenshot();
+                
+                // Restore original container styles
+                container.style.width = originalWidth;
+                container.style.maxWidth = originalMaxWidth;
+                container.style.borderRadius = originalBorderRadius;
+                container.style.overflow = originalOverflow;
+                
+                // Restore content section styles
+                if (isMobileDevice()) {
+                    document.querySelectorAll('.welcome-section, .committee-section, .info-box, .fees-section, .form-section, .payment-info, .whatsapp-instructions').forEach(section => {
+                        section.style.marginLeft = '';
+                        section.style.marginRight = '';
+                        section.style.width = '';
+                    });
+                    
+                    document.querySelectorAll('.form-column').forEach(column => {
+                        column.style.marginLeft = '';
+                        column.style.marginRight = '';
+                        column.style.width = '';
+                    });
+                }
                 
                 // Display the screenshot
                 const screenshotImg = document.getElementById('formScreenshot');
@@ -854,20 +856,7 @@
                 
                 // Set up direct WhatsApp image sharing
                 document.getElementById('whatsappDirectButton').onclick = function() {
-                    const button = this;
-                    const originalText = button.querySelector('span:last-child').textContent;
-                    
-                    // Show loading state
-                    button.querySelector('span:last-child').textContent = 'Opening WhatsApp...';
-                    button.disabled = true;
-                    
                     shareImageViaWhatsApp(formScreenshotData);
-                    
-                    // Reset button after delay
-                    setTimeout(() => {
-                        button.querySelector('span:last-child').textContent = originalText;
-                        button.disabled = false;
-                    }, 3000);
                 };
                 
                 // Set up download button
@@ -908,94 +897,84 @@
         
         // Capture the entire form content section as screenshot with optimized settings
         async function captureFormScreenshot() {
-            const isMobile = isMobileDevice();
-            const container = document.querySelector('.container');
-            
-            // Store original styles
-            const originalStyles = {
-                bodyPadding: document.body.style.padding,
-                bodyMargin: document.body.style.margin,
-                bodyBackground: document.body.style.background,
-                containerWidth: container.style.width,
-                containerMaxWidth: container.style.maxWidth,
-                containerMargin: container.style.margin,
-                containerPadding: container.style.padding,
-                containerBorderRadius: container.style.borderRadius
-            };
-            
+            const contentSection = document.querySelector('.content');
             try {
-                if (isMobile) {
-                    // Apply mobile full-width styles
-                    document.body.style.padding = '0';
-                    document.body.style.margin = '0';
-                    document.body.style.background = 'white';
-                    
-                    container.style.width = '100%';
-                    container.style.maxWidth = '100%';
-                    container.style.margin = '0';
-                    container.style.padding = '0';
-                    container.style.borderRadius = '0';
-                }
-                
-                // Wait for styles to settle
+                // Force a reflow to ensure all elements are properly rendered
                 await new Promise(resolve => setTimeout(resolve, 100));
                 
-                // Capture with optimal settings
-                const canvas = await html2canvas(container, {
-                    scale: 1,
-                    useCORS: true,
+                const isMobile = isMobileDevice();
+                
+                // compute capture dimensions
+                let captureWidth, captureHeight, windowWidth, windowHeight;
+                
+                if (isMobile) {
+                    // target WhatsApp-friendly width
+                    captureWidth = 1080;
+                    // scale height to preserve aspect ratio of the rendered content
+                    const originalWidth = contentSection.scrollWidth || document.documentElement.clientWidth;
+                    const originalHeight = contentSection.scrollHeight || document.documentElement.clientHeight;
+                    const ratio = originalWidth ? (captureWidth / originalWidth) : 1;
+                    captureHeight = Math.ceil(originalHeight * ratio);
+                    windowWidth = captureWidth;
+                    windowHeight = captureHeight;
+                } else {
+                    captureWidth = contentSection.scrollWidth;
+                    captureHeight = contentSection.scrollHeight;
+                    windowWidth = Math.max(window.innerWidth, captureWidth);
+                    windowHeight = Math.max(window.innerHeight, captureHeight);
+                }
+                
+                // Use html2canvas with explicit width & height to avoid blank canvas on some Android devices
+                const canvas = await html2canvas(contentSection, {
+                    scale: 2,
                     logging: false,
+                    useCORS: true,
                     backgroundColor: '#ffffff',
                     allowTaint: true,
-                    width: isMobile ? window.innerWidth : container.offsetWidth,
-                    height: container.scrollHeight,
+                    scrollY: -window.scrollY,
+                    width: captureWidth,
+                    height: captureHeight,
+                    windowWidth: windowWidth,
+                    windowHeight: windowHeight,
                     onclone: function(clonedDoc) {
-                        if (isMobile) {
-                            const clonedBody = clonedDoc.body;
-                            clonedBody.style.margin = '0';
-                            clonedBody.style.padding = '0';
-                            clonedBody.style.background = 'white';
-                            
-                            const clonedContainer = clonedDoc.querySelector('.container');
-                            if (clonedContainer) {
-                                clonedContainer.style.width = '100%';
-                                clonedContainer.style.maxWidth = '100%';
-                                clonedContainer.style.margin = '0';
-                                clonedContainer.style.padding = '0';
+                        // Ensure all content is visible in the cloned document
+                        const clonedContainer = clonedDoc.querySelector('.container');
+                        if (clonedContainer) {
+                            clonedContainer.style.overflow = 'visible';
+                            clonedContainer.style.boxShadow = 'none';
+                            if (isMobile) {
+                                clonedContainer.style.width = captureWidth + 'px';
+                                clonedContainer.style.maxWidth = captureWidth + 'px';
                                 clonedContainer.style.borderRadius = '0';
-                                clonedContainer.style.boxShadow = 'none';
                             }
+                        }
+                        
+                        const clonedContent = clonedDoc.querySelector('.content');
+                        if (clonedContent) {
+                            clonedContent.style.padding = '20px';
+                            clonedContent.style.overflow = 'visible';
+                        }
+                        
+                        // Force all sections to width used for capture so layout in cloned doc matches capture size
+                        if (isMobile) {
+                            clonedDoc.querySelectorAll('.welcome-section, .committee-section, .info-box, .fees-section, .form-section, .payment-info, .whatsapp-instructions').forEach(section => {
+                                section.style.marginLeft = '0';
+                                section.style.marginRight = '0';
+                                section.style.width = captureWidth + 'px';
+                            });
+                            
+                            clonedDoc.querySelectorAll('.form-column').forEach(column => {
+                                column.style.marginLeft = '0';
+                                column.style.marginRight = '0';
+                                column.style.width = captureWidth + 'px';
+                            });
                         }
                     }
                 });
                 
-                // Restore original styles
-                document.body.style.padding = originalStyles.bodyPadding || '';
-                document.body.style.margin = originalStyles.bodyMargin || '';
-                document.body.style.background = originalStyles.bodyBackground || '';
-                
-                container.style.width = originalStyles.containerWidth || '';
-                container.style.maxWidth = originalStyles.containerMaxWidth || '';
-                container.style.margin = originalStyles.containerMargin || '';
-                container.style.padding = originalStyles.containerPadding || '';
-                container.style.borderRadius = originalStyles.containerBorderRadius || '';
-                
-                return canvas.toDataURL('image/jpeg', 1.0);
-                
+                return canvas.toDataURL('image/jpeg', 0.9);
             } catch (error) {
                 console.error('Error capturing screenshot:', error);
-                
-                // Restore styles in case of error
-                document.body.style.padding = originalStyles.bodyPadding || '';
-                document.body.style.margin = originalStyles.bodyMargin || '';
-                document.body.style.background = originalStyles.bodyBackground || '';
-                
-                container.style.width = originalStyles.containerWidth || '';
-                container.style.maxWidth = originalStyles.containerMaxWidth || '';
-                container.style.margin = originalStyles.containerMargin || '';
-                container.style.padding = originalStyles.containerPadding || '';
-                container.style.borderRadius = originalStyles.containerBorderRadius || '';
-                
                 throw error;
             }
         }
@@ -1039,51 +1018,11 @@
         
         // Fallback method for WhatsApp sharing
         function fallbackWhatsAppShare() {
-            // Automatically download the image first
-            downloadImage(formScreenshotData);
-            
-            // Then open WhatsApp with pre-filled message
-            const message = 'Hello! Here is my PGA Society registration form. Please find the attached image with my registration details.';
-            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-            
-            // Small delay to ensure download starts
-            setTimeout(() => {
-                if (isMobileDevice()) {
-                    // On mobile, try to open WhatsApp app directly
-                    window.location.href = `whatsapp://send?phone=${whatsappNumber}&text=${encodeURIComponent(message)}`;
-                    
-                    // Fallback to web WhatsApp if app doesn't open
-                    setTimeout(() => {
-                        window.open(whatsappUrl, '_blank');
-                    }, 1000);
-                } else {
-                    window.open(whatsappUrl, '_blank');
-                }
-            }, 500);
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Here is my PGA Society registration form')}`;
+            window.open(whatsappUrl, '_blank');
             
             // Show instructions for manual attachment
-            showMobileInstructions();
-        }
-        
-        // Show mobile-friendly instructions
-        function showMobileInstructions() {
-            const instructionsHTML = `
-                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center;" onclick="this.remove()">
-                    <div style="background: white; padding: 20px; border-radius: 10px; margin: 20px; max-width: 350px; text-align: center;" onclick="event.stopPropagation()">
-                        <h3 style="color: #25D366; margin-bottom: 15px;">📱 WhatsApp Instructions</h3>
-                        <p style="margin-bottom: 15px; line-height: 1.5;"><strong>Your form image has been downloaded!</strong></p>
-                        <ol style="text-align: left; padding-left: 20px; margin-bottom: 20px;">
-                            <li>WhatsApp should open automatically</li>
-                            <li>If not, open WhatsApp manually</li>
-                            <li>Find the downloaded image in your gallery</li>
-                            <li>Attach the image to the chat</li>
-                            <li>Send the message</li>
-                        </ol>
-                        <button onclick="this.parentElement.parentElement.remove()" style="background: #25D366; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold;">Got it!</button>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', instructionsHTML);
+            alert('Please attach the downloaded image to your WhatsApp message manually.');
         }
         
         // Download image
