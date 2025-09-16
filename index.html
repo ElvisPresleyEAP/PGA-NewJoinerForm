@@ -663,13 +663,13 @@
                         <div class="form-group">
                             <label>Sort Code *</label>
                             <div class="hardcoded-field">
-                                <span class="hardcoded-field-value">77-05-04</span>
+                                <span class="hardcoded-field-value">11-11-11</span>
                             </div>
                         </div>
                         <div class="form-group">
                             <label>Account Number *</label>
                             <div class="hardcoded-field">
-                                <span class="hardcoded-field-value">38211160</span>
+                                <span class="hardcoded-field-value">12345678</span>
                             </div>
                         </div>
                     </div>
@@ -683,10 +683,6 @@
                             <option value="summer">Summer League (£20)</option>
                             <option value="winter">Winter League (£20)</option>
                         </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email Address *</label>
-                        <input type="email" id="email" name="email" required>
                     </div>
                     <div class="form-group">
                         <label for="phone">Phone Number *</label>
@@ -1004,7 +1000,7 @@
                     }).then(() => {
                         console.log('Share successful');
                     }).catch((error) => {
-                        console.error('Sharing failed', error);
+                        console.error('Error sharing:', error);
                         fallbackWhatsAppShare();
                     });
                 } else {
@@ -1018,36 +1014,33 @@
         
         // Fallback method for WhatsApp sharing
         function fallbackWhatsAppShare() {
-            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Here is my PGA Society registration form')}`;
-            window.open(whatsappUrl, '_blank');
-            
-            // Show instructions for manual attachment
-            alert('Please attach the downloaded image to your WhatsApp message manually.');
+            const message = encodeURIComponent("Here is my PGA Society registration form. Please confirm receipt.");
+            window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
         }
         
-        // Download image
+        // Download image function
         function downloadImage(imageData) {
             const link = document.createElement('a');
-            link.download = 'pga_registration.jpg';
             link.href = imageData;
+            link.download = 'pga_registration.jpg';
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
         }
         
-        // Initialize the form
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set focus to the first input field
-            document.getElementById('fullName').focus();
-            
-            // Add event listeners to clear error state when typing
-            const inputs = document.querySelectorAll('input, select');
-            inputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    if (this.style.borderColor === 'rgb(231, 76, 60)') {
-                        this.style.borderColor = '#e9ecef';
-                    }
-                });
-            });
-        });
+        // Initialize the form with example data for testing
+        function initializeExampleData() {
+            document.getElementById('fullName').value = 'John Smith';
+            document.getElementById('hcpIndex').value = '12.5';
+            document.getElementById('bankName').value = 'HSBC';
+            document.getElementById('sortCode').value = '40-12-50';
+            document.getElementById('accountNumber').value = '12345678';
+            document.getElementById('registrationType').value = 'summer';
+            document.getElementById('phone').value = '07123456789';
+        }
+        
+        // Uncomment the line below to pre-fill the form with example data for testing
+        // initializeExampleData();
     </script>
 </body>
 </html>
